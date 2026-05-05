@@ -1,10 +1,10 @@
 ---
 # SPDX-FileCopyrightText: 2026 Mika Tammi
 # SPDX-License-Identifier: CC-BY-4.0
-title: How I created my first RISC-V processor
-subtitle: riski5 — a Clash core that boots Linux on a 22-year-old Cyclone II
-author: Mika Tammi
-date: 2026-05-05
+# `pagetitle` sets only the HTML <title>; using `title` would also
+# emit an automatic title slide, which we don't want — the explicit
+# {.title-deck} slide is the deck cover.
+pagetitle: How I created my first RISC-V processor
 ---
 
 ## How I created my first RISC-V processor {.title-deck}
