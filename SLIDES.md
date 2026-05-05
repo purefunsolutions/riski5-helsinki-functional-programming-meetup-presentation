@@ -1,8 +1,8 @@
 ---
 # SPDX-FileCopyrightText: 2026 Mika Tammi
 # SPDX-License-Identifier: CC-BY-4.0
-title: riski5 — RISC-V on FPGA in Haskell
-subtitle: A Clash core that boots Linux on a 22-year-old Cyclone II
+title: How I created my first RISC-V processor
+subtitle: riski5 — a Clash core that boots Linux on a 22-year-old Cyclone II
 author: Mika Tammi
 date: 2026-05-05
 ---
