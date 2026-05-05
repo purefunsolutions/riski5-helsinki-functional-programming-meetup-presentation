@@ -1,0 +1,40 @@
+// SPDX-FileCopyrightText: 2026 Mika Tammi
+// SPDX-License-Identifier: CC-BY-4.0
+//
+// One Haskell source — the type-level RISC-V ISA + the Clash core —
+// produces multiple independent artifacts: real silicon, fast C++
+// simulation, pure-Haskell reference interpreter, and the firmware
+// assembler eDSL. Each downstream is a total function over the same
+// type-level definitions.
+digraph artifacts {
+  rankdir=LR;
+  bgcolor="white";
+  node  [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled"];
+  edge  [fontname="Helvetica", fontsize=10, color="#444444"];
+
+  Source [label="Riski5.ISA + Riski5.Core\n(Haskell / Clash source)\n— Instr, decode, encode, alu —",
+          fillcolor="#d6e9ff", color="#3777cc"];
+
+  // Four downstream artifacts
+  Verilog [label="clash --verilog\n→ synthesisable Verilog\n→ Quartus → bitstream\n→ Cyclone II silicon",
+           fillcolor="#bff5b6", color="#1d8c1d"];
+
+  HSim   [label="simulate (Haskell)\n→ Riski5.Reference\n→ Hedgehog properties\n(Layer 1)",
+          fillcolor="#fff2bf", color="#aa8800"];
+
+  Vlator [label="clash --verilog\n→ verilambda shim-gen\n→ Verilator C++\n→ whole-SoC sim\n(Layer 1.75)",
+          fillcolor="#ffd6a5", color="#cc6600"];
+
+  Asm    [label="Riski5.Asm (eDSL)\n→ encode :: Instr → BV 32\n→ .mif / .bin / .elf\nfirmware images",
+          fillcolor="#ffe7e7", color="#cc4444"];
+
+  Source -> Verilog [label="silicon"];
+  Source -> HSim    [label="reference"];
+  Source -> Vlator  [label="fast sim"];
+  Source -> Asm     [label="firmware"];
+
+  // Bonus: formal proof artifact
+  Formal [label="riscv-formal\nRVFI (20 signals)\n→ SymbiYosys\n53 / 53 PASS\n(Layer 2)",
+          fillcolor="#e8d6ff", color="#7733cc"];
+  Verilog -> Formal [label="RVFI port"];
+}

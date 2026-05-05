@@ -1,0 +1,50 @@
+// SPDX-FileCopyrightText: 2026 Mika Tammi
+// SPDX-License-Identifier: CC-BY-4.0
+//
+// riski5 5-stage pipeline: Fetch | Decode | Execute | Memory | Writeback.
+// Pipeline registers between stages. Forwarding paths from EX→X and
+// MEM→X close RAW hazards. stallS gates the front end. Branch flushes
+// squash the two speculative instructions in IF/ID and ID/EX (2-cycle
+// taken-branch penalty).
+digraph pipeline {
+  rankdir=LR;
+  bgcolor="white";
+  node  [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled",
+         fillcolor="#d6e9ff", color="#3777cc"];
+  edge  [fontname="Helvetica", fontsize=9, color="#444444"];
+
+  // Pipeline stages
+  F [label="F\nFetch\n(imem read)"];
+  D [label="D\nDecode\n(rs1 / rs2 read)"];
+  X [label="X\nExecute\n(ALU, branch, RV32M)"];
+  M [label="M\nMemory\n(dmem r/w)"];
+  W [label="W\nWriteback\n(rd commit)"];
+
+  // Pipeline registers
+  IF_ID  [label="IF/ID",  shape=rectangle, fillcolor="#fff2bf", color="#aa8800"];
+  ID_EX  [label="ID/EX",  shape=rectangle, fillcolor="#fff2bf", color="#aa8800"];
+  EX_MEM [label="EX/MEM", shape=rectangle, fillcolor="#fff2bf", color="#aa8800"];
+  MEM_WB [label="MEM/WB", shape=rectangle, fillcolor="#fff2bf", color="#aa8800"];
+
+  F -> IF_ID -> D -> ID_EX -> X -> EX_MEM -> M -> MEM_WB -> W;
+
+  // Forwarding paths
+  EX_MEM -> X [label="EX→X forward", style=dashed, color="#1d8c1d", constraint=false];
+  MEM_WB -> X [label="MEM→X forward", style=dashed, color="#1d8c1d", constraint=false];
+
+  // Writeback feedback to D (regfile)
+  W -> D [label="rd write", style=dashed, color="#888", constraint=false];
+
+  // Stall (front-end freeze)
+  stall [label="stallS\n(bus back-pressure,\nRV32M busy ~34cy)",
+         shape=diamond, fillcolor="#ffe7e7", color="#cc4444"];
+  stall -> F      [style=dotted, color="#cc4444", label="freeze"];
+  stall -> IF_ID  [style=dotted, color="#cc4444"];
+  stall -> ID_EX  [style=dotted, color="#cc4444"];
+
+  // Branch flush
+  flush [label="branch / JAL / JALR / MRET / trap\n→ flush 2 speculative",
+         shape=parallelogram, fillcolor="#ffd6a5", color="#cc6600"];
+  X -> flush -> IF_ID [style=dotted, color="#cc6600", label="squash"];
+  flush -> ID_EX      [style=dotted, color="#cc6600"];
+}

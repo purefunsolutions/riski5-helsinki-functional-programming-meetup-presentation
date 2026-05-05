@@ -1,0 +1,52 @@
+version = 1
+SPDX-PackageName = "riski5-helsinki-functional-programming-meetup-presentation"
+SPDX-PackageSupplier = "Mika Tammi <mikatammi@gmail.com>"
+SPDX-PackageDownloadLocation = "https://github.com/purefunsolutions/riski5-helsinki-functional-programming-meetup-presentation"
+
+# Dual licensing: code under MIT, content (slides, diagrams, images, CSS) under CC-BY-4.0.
+# Files that cannot carry an SPDX comment themselves (lock files, binary
+# images, the deployed docs/ tree) get their licensing attached here.
+
+[[annotations]]
+path = "flake.lock"
+SPDX-FileCopyrightText = "2026 Mika Tammi"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "docs/**"
+SPDX-FileCopyrightText = "2026 Mika Tammi"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+[[annotations]]
+path = "assets/images/de2-board.jpg"
+SPDX-FileCopyrightText = "2026 Mika Tammi"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+[[annotations]]
+path = "assets/images/linux-boot.png"
+SPDX-FileCopyrightText = "2026 Mika Tammi"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+[[annotations]]
+path = "assets/images/HelloFromRiski5.jpg"
+SPDX-FileCopyrightText = "2026 Mika Tammi"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+[[annotations]]
+path = "assets/images/AlteraSalkku01.jpeg"
+SPDX-FileCopyrightText = "2026 Mika Tammi"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+[[annotations]]
+path = "assets/images/AlteraSalkku02.jpeg"
+SPDX-FileCopyrightText = "2026 Mika Tammi"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+# Pure Fun Solutions lambda logo, copied verbatim from
+# https://github.com/purefunsolutions/purefun-front (favicon.png).
+# Kept under the same dual licence as the upstream Pure Fun Solutions
+# project until that repo formalises its own LICENSES/ folder.
+[[annotations]]
+path = "assets/images/lambda-logo.png"
+SPDX-FileCopyrightText = "2026 Pure Fun Solutions / Mika Tammi"
+SPDX-License-Identifier = "CC-BY-4.0"

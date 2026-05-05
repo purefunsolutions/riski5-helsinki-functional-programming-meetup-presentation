@@ -1,0 +1,353 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Mika Tammi
+ * SPDX-License-Identifier: CC-BY-4.0
+ *
+ * DZSlides overrides for the riski5 Helsinki FP meetup deck:
+ *  - hide non-current slides (pandoc 3.7's DZSlides template ships
+ *    pointer-events rules but no display:none/block — without this,
+ *    every slide is visually stacked through the others)
+ *  - opaque slide backgrounds so the lambda corner doesn't pick up
+ *    text from underneath
+ *  - bottom-left lambda corner branding
+ *  - tighter code-block padding so Haskell snippets fit on one slide
+ *  - slightly larger base font to read across a meetup-room projector
+ */
+
+/* === Slide visibility ===
+ * DZSlides positions every <section> absolutely and toggles
+ * `aria-selected` on the currently-displayed one. Pandoc 3.7's
+ * bundled template only flips pointer-events, leaving every slide
+ * visually stacked. We hide non-selected slides via `:not()` so
+ * that the *selected* slide keeps its natural display value —
+ * critical for `.title-deck` which needs `display: flex` for
+ * vertical centring (a `display: block` override would clobber it).
+ * The `.view` class is added by the JS when the user presses `o`
+ * for the overview/grid screen — in that mode every section must
+ * stay visible. */
+body > section:not([aria-selected]) {
+  display: none;
+}
+
+html.view body > section {
+  display: block;
+}
+
+/* Slides keep their natural full height. Overflow is clipped at
+ * the slide's bottom edge so any over-long content is hidden
+ * rather than spilling beyond the slide. Section background is
+ * intentionally transparent so it inherits whatever the body /
+ * html background is. The corner brand (body::before, opacity 1)
+ * sits in the bottom-left of every slide and visually overlays
+ * any content beneath it — slides should keep their bottom-left
+ * corner light. */
+body > section {
+  overflow: hidden;
+  background-color: transparent;
+}
+
+/* Lambda corner + "Pure Fun Solutions" wordmark — appears on every
+ * slide, every section, every theme. Position is fixed to the
+ * viewport (not the .slide flexbox) so it survives DZSlides'
+ * transform-based slide transitions. The pseudo-element doubles as
+ * both the lambda image (background) and the wordmark (text content)
+ * — flex centring keeps them on the same baseline. */
+body::before {
+  content: "Pure Fun Solutions";
+  position: fixed;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  height: 64px;
+  padding-left: 76px;
+  padding-right: 0.5rem;
+  background-image: url("../images/lambda-logo.png");
+  background-size: 64px 64px;
+  background-repeat: no-repeat;
+  background-position: left center;
+  display: flex;
+  align-items: center;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #2a2a2a;
+  z-index: 10;
+  opacity: 1;
+  pointer-events: none;
+}
+
+/* Bottom-right counterpart to the lambda + wordmark — a clickable
+ * link to the Pure Fun Solutions site. Use position: absolute so
+ * the body's own `position: absolute` (DZSlides default) is the
+ * containing block — avoids the body's runtime transform messing
+ * with `position: fixed` resolution. Same height + flex centring
+ * as the body::before logo so the two corner brands sit on the
+ * same vertical baseline. */
+a.brand-link {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  height: 64px;
+  padding-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #2a2a2a;
+  text-decoration: none;
+  z-index: 100;
+  opacity: 1;
+}
+
+a.brand-link:hover,
+a.brand-link:focus {
+  text-decoration: underline;
+  color: #1a7a1a;
+}
+
+/* Slightly larger root font; readable from the back row of a
+ * 30-person meetup room with a 1080p projector. */
+html {
+  font-size: 22px;
+}
+
+/* Code blocks: more contrast, less padding, monospace at full body size. */
+pre {
+  font-size: 0.85em;
+  line-height: 1.35;
+  padding: 0.6em 0.8em;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+code {
+  font-size: 0.95em;
+}
+
+/* Section headings shouldn't dominate the slide; the speaker says it. */
+h2 {
+  font-size: 1.6em;
+  margin-bottom: 0.5em;
+}
+
+h3 {
+  font-size: 1.2em;
+}
+
+/* DZSlides' default centring leaves big gaps with bullet content;
+ * top-align lets list-heavy slides start near the title. */
+section.slide {
+  justify-content: flex-start;
+  padding-top: 2rem;
+}
+
+/* Bullet lists on slides should breathe a little. */
+section.slide ul,
+section.slide ol {
+  line-height: 1.4;
+}
+
+section.slide li + li {
+  margin-top: 0.35em;
+}
+
+/* Embedded SVG diagrams scale to the slide. The max-height is in
+ * em (not vh) so it tracks the slide's logical 600px height rather
+ * than the browser-window viewport height — a 1080p window
+ * otherwise gives 65vh ≈ 700px, much taller than the slide itself. */
+section.slide img,
+section.slide svg {
+  max-width: 100%;
+  max-height: 15em;
+  height: auto;
+  display: block;
+  margin: 0.4em auto;
+}
+
+section.code-dense img,
+section.code-dense svg {
+  max-height: 13em;
+}
+
+/* {.presenter-note} slides: a bright reminder for the speaker
+ * mid-deck — run a command in another terminal etc. Centered,
+ * tinted background so it can't be missed during navigation. */
+section.presenter-note {
+  padding: 2rem 3rem;
+  background-color: #fff7d6;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+section.presenter-note h2 {
+  font-size: 1.6em;
+  color: #8a5a00;
+  margin-bottom: 0.5em;
+}
+
+section.presenter-note pre {
+  font-size: 1.1em;
+  background-color: #2a2a2a;
+  color: #ffe9a8;
+  border-radius: 6px;
+  padding: 0.7em 1em;
+  margin: 0.5em 0;
+}
+
+section.presenter-note p {
+  font-size: 0.95em;
+  color: #4a3300;
+  margin: 0.4em 0;
+}
+
+/* {.full-photo} slides: ordinary slide heading, photo fills the
+ * remaining slide area below it. */
+section.full-photo {
+  padding-top: 0.6rem;
+}
+
+section.full-photo h2 {
+  font-size: 1.2em;
+  margin-bottom: 0.3em;
+}
+
+section.full-photo img {
+  max-width: 100%;
+  max-height: calc(100% - 3em);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+/* {.full-diagram} slides: small heading + the diagram fills the
+ * rest of the slide. Used for SoC + pipeline block diagrams. */
+section.full-diagram {
+  padding-top: 0.4rem;
+}
+
+section.full-diagram h2 {
+  font-size: 1.1em;
+  margin-bottom: 0.2em;
+}
+
+section.full-diagram img,
+section.full-diagram svg {
+  max-width: 100%;
+  max-height: calc(100% - 2.5em);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+/* === Code-dense slide ({.code-dense}) ===
+ * Slides where most of the content is Haskell source — shrink the
+ * code font, tighten the spacing between consecutive code
+ * paragraphs so they read as one logical block, and drop the
+ * default top padding of `section.slide` so the slide actually
+ * fits inside the height-clipped section. */
+section.code-dense {
+  padding-top: 0.6rem;
+}
+
+section.code-dense h2 {
+  font-size: 1.2em;
+  margin-bottom: 0.3em;
+}
+
+section.code-dense pre {
+  font-size: 0.6em;
+  line-height: 1.25;
+  padding: 0.35em 0.7em;
+  margin: 0.25em 0;
+}
+
+section.code-dense pre + pre,
+section.code-dense div.sourceCode + div.sourceCode {
+  margin-top: 0.1em;
+}
+
+section.code-dense p {
+  font-size: 0.8em;
+  margin: 0.3em 0;
+}
+
+/* Tables on dense slides shrink with everything else; tighten cell
+ * padding so a 12-row history table fits next to its summary text. */
+section.code-dense table {
+  font-size: 0.7em;
+  border-collapse: collapse;
+  margin: 0.3em auto;
+}
+
+section.code-dense table th,
+section.code-dense table td {
+  padding: 0.18em 0.5em;
+}
+
+/* Two-column slides — code on the left, image on the right.
+ * 50/50 split, image bounded vertically so it fits inside the
+ * slide's clipped height. */
+section.two-col div.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2em;
+  align-items: start;
+}
+
+section.two-col div.column {
+  min-width: 0;
+  overflow-x: visible;
+}
+
+section.two-col div.column img {
+  max-width: 100%;
+  max-height: 20em;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0;
+}
+
+/* === Top-of-deck title slide ({.title-deck}) ===
+ * Centred title + slightly smaller author name beneath. Both the
+ * h2 and the p are full-width blocks with `text-align: center`, so
+ * their text centres are *exactly* the slide centre regardless of
+ * content width or wrapping. The flex container handles vertical
+ * centring of the title block as a whole. */
+section.title-deck {
+  /* Cover slide keeps full height; flex-centring lands on the
+   * geometric centre because there is no compensating padding. */
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+}
+
+section.title-deck > * {
+  width: 100%;
+  text-align: center;
+  margin: 0;
+}
+
+section.title-deck h2 {
+  font-size: 2.4em;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.6em;
+}
+
+section.title-deck p {
+  font-size: 1.4em;
+  font-weight: 500;
+  color: #444;
+}
