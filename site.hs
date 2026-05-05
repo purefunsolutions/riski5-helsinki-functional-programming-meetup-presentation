@@ -61,7 +61,9 @@ rules = do
   match "SLIDES.md" $ do
     route $ constRoute "index.html"
     compile $
-      getResourceBody
+      -- getResourceString (NOT getResourceBody) so the YAML
+      -- frontmatter — including title: — reaches pandoc.
+      getResourceString
         >>= withItemBody
           ( unixFilter
               "pandoc"
