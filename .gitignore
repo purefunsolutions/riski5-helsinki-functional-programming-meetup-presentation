@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: 2026 Mika Tammi
+# SPDX-License-Identifier: MIT
+
+# Hakyll cache (build artifacts that aren't the deployed _site equivalent)
+_cache/
+_site/
+
+# Hakyll's atomic-write tmp files inside docs/ (e.g.
+# docs/assets/css/overrides.css.tmp.292984.1777935335517)
+*.tmp.*
+
+# Cabal / GHC build artifacts
+dist/
+dist-newstyle/
+.ghc.environment.*
+
+# Nix
+result
+result-*
+
+# Editor
+*.swp
+.vscode/
+.direnv/

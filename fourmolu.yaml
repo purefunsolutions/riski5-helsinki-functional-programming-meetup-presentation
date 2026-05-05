@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2026 Mika Tammi
+# SPDX-License-Identifier: MIT
+indentation: 2
+comma-style: leading
+import-export-style: diff-friendly
+respectful: true
+haddock-style: multi-line
+newlines-between-decls: 1
+function-arrows: trailing
+record-brace-space: true
+indent-wheres: false

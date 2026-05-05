@@ -1,0 +1,24 @@
+cabal-version:      3.0
+-- SPDX-FileCopyrightText: 2026 Mika Tammi
+-- SPDX-License-Identifier: MIT
+name:               presentation
+version:            0.1.0
+synopsis:           Hakyll site builder for the riski5 Helsinki FP meetup deck
+description:
+  Single-page Hakyll site that pipes SLIDES.md through pandoc's DZSlides
+  writer, renders Graphviz .dot diagrams to SVG, and copies static assets
+  into docs/ for GitHub Pages.
+
+license:            MIT
+license-file:       LICENSES/MIT.txt
+author:             Mika Tammi
+maintainer:         mikatammi@gmail.com
+build-type:         Simple
+
+executable site
+    main-is:          site.hs
+    build-depends:    base ^>=4.20
+                    , directory
+                    , hakyll
+    default-language: GHC2021
+    ghc-options:      -Wall -threaded

@@ -1,0 +1,75 @@
+// SPDX-FileCopyrightText: 2026 Mika Tammi
+// SPDX-License-Identifier: CC-BY-4.0
+//
+// riski5 SoC block diagram. Three clock domains shaded:
+//   DomCore  (CPU pipeline) — 40 MHz today
+//   DomBus   (fabric + memory-mapped peripherals) — 40 MHz
+//   DomSdram (SDRAM controller) — 50 MHz on silicon (133 MHz target deferred)
+// CDC bridges sit on the domain boundaries.
+digraph soc {
+  rankdir=LR;
+  bgcolor="white";
+  node  [fontname="Helvetica", fontsize=11, shape=box, style="rounded,filled"];
+  edge  [fontname="Helvetica", fontsize=10, color="#444444"];
+
+  // DomCore (CPU)
+  subgraph cluster_core {
+    label = "DomCore — CPU @ 40 MHz";
+    style = "rounded,filled";
+    color = "#aacfff";
+    fontsize = 12;
+    fontname = "Helvetica-Bold";
+    Core [label="riski5 Core\n(F | D | X | M | W)\nRV32IMA + Zicsr",
+          fillcolor="#d6e9ff"];
+  }
+
+  // DomBus (fabric + peripherals)
+  subgraph cluster_bus {
+    label = "DomBus — Fabric @ 40 MHz";
+    style = "rounded,filled";
+    color = "#bff5b6";
+    fontsize = 12;
+    fontname = "Helvetica-Bold";
+
+    Bus    [label="Avalon-MM\nBus Decoder", fillcolor="#e3fbe0"];
+    BRAM   [label="BRAM\n4 KB",            fillcolor="#e3fbe0"];
+    UART   [label="JTAG-UART\nAltera IP",   fillcolor="#e3fbe0"];
+    GPIO   [label="GPIO\nLEDs / KEYs",      fillcolor="#e3fbe0"];
+    LCD    [label="HD44780\nLCD",           fillcolor="#e3fbe0"];
+    CLINT  [label="CLINT\n+ Timer",         fillcolor="#e3fbe0"];
+    PLIC   [label="PLIC",                   fillcolor="#e3fbe0"];
+    SRAM   [label="Async SRAM\n512 KB",     fillcolor="#e3fbe0"];
+  }
+
+  // DomSdram
+  subgraph cluster_sdram {
+    label = "DomSdram — SDRAM @ 50 MHz (133 MHz deferred)";
+    style = "rounded,filled";
+    color = "#ffd6a5";
+    fontsize = 12;
+    fontname = "Helvetica-Bold";
+
+    Sdram [label="Pure-Clash\nSDR SDRAM Controller\n8 MB",
+           fillcolor="#ffe9cc"];
+  }
+
+  // CDC bridges
+  CoreCdc  [label="CoreCdcBridge\n(toggle-handshake)",
+            shape=parallelogram, fillcolor="#ffe7e7"];
+  SdramCdc [label="SdramCdcBridge\n(toggle-handshake)",
+            shape=parallelogram, fillcolor="#ffe7e7"];
+
+  // Wiring
+  Core -> CoreCdc -> Bus [label="ifetch + dmem"];
+  Bus  -> BRAM;
+  Bus  -> UART;
+  Bus  -> GPIO;
+  Bus  -> LCD;
+  Bus  -> CLINT;
+  Bus  -> PLIC;
+  Bus  -> SRAM;
+  Bus  -> SdramCdc -> Sdram;
+
+  CLINT -> Core [style=dashed, color="#cc6600", label="mtime IRQ"];
+  PLIC  -> Core [style=dashed, color="#cc6600", label="ext IRQ"];
+}
